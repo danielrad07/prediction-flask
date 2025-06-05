@@ -1,26 +1,30 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, url_for, session
 import joblib
 
 app = Flask(__name__)
-app.secret_key = 'D@nieL07'  # change ce mot si tu veux
+app.secret_key = 'D@nieL07'  # Remplace par une vraie clé secrète
+
+MOT_DE_PASSE = 'D@nieL07'
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+def login():
+    message = ''
     if request.method == 'POST':
-        if request.form['password'] == 'D@nieL07':  # 🔐 Ton mot de passe ici
-            session['logged_in'] = True
-            return redirect('/predict')
+        mot_de_passe = request.form.get('password')
+        if mot_de_passe == MOT_DE_PASSE:
+            session['authenticated'] = True
+            return redirect(url_for('predict'))
         else:
-            return render_template('login.html', error='Mot de passe incorrect.')
-    return render_template('login.html')
-
+            message = 'Mot de passe incorrect.'
+    return render_template('login.html', message=message)
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    if not session.get('logged_in'):
-        return redirect('/')
+    if 'authenticated' not in session:
+        return redirect(url_for('login'))
 
     prediction_text = None
+
     if request.method == 'POST':
         try:
             cote1 = float(request.form['cote_equipe_1'])
@@ -35,8 +39,10 @@ def predict():
 
     return render_template('index.html', prediction_text=prediction_text)
 
-
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
-    return redirect('/')
+    session.pop('authenticated', None)
+    return redirect(url_for('login'))
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)
