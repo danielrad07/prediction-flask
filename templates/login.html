@@ -12,7 +12,12 @@
     <button type="submit">Se connecter</button>
   </form>
   {% if error %}
-    <p class="result">{{ error }}</p>
+    <p class="result">{{ error }}
+{% if message %}
+  <p class="result">{{ message }}</p>
+{% endif %}
+
+</p>
   {% endif %}
 </body>
 </html>

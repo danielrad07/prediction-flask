@@ -16,7 +16,13 @@ def login():
             return redirect(url_for('predict'))
         else:
             return render_template('login.html', error="Mot de passe incorrect")
-    return render_template('login.html')
+
+ # Affiche un message si l'utilisateur a été déconnecté
+    logout_message = None
+    if request.args.get('message') == 'logout':
+        logout_message = "Vous avez été déconnecté avec succès."
+
+   return render_template('login.html', message=logout_message)
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
@@ -39,7 +45,8 @@ def predict():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('login', message='logout'))
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
