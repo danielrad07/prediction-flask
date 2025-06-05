@@ -27,16 +27,15 @@ def login():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    if not session.get('authenticated'):
-        return redirect(url_for('login'))
+    if not session.get('logged_in'):
+        return redirect('/')
 
-        prediction_text = None
+    prediction_text = None  # <- corrige le crash
     if request.method == 'POST':
         try:
-            # Remplacement des virgules par des points
-            cote1 = float(request.form['cote_equipe_1'].replace(',', '.'))
-            coteN = float(request.form['cote_nul'].replace(',', '.'))
-            cote2 = float(request.form['cote_equipe_2'].replace(',', '.'))
+            cote1 = float(request.form['cote_equipe_1'])
+            coteN = float(request.form['cote_nul'])
+            cote2 = float(request.form['cote_equipe_2'])
 
             model = joblib.load('modele_cotes.pkl')
             prediction = model.predict([[cote1, coteN, cote2]])[0]
@@ -45,6 +44,7 @@ def predict():
             prediction_text = "Erreur de saisie."
 
     return render_template('index.html', prediction_text=prediction_text)
+
 
 @app.route('/logout')
 def logout():
