@@ -1,33 +1,46 @@
-from flask import Flask, request, render_template
-import joblib  # ✅ utiliser joblib à la place de pickle
-import numpy as np
-
-app = Flask(__name__)
-
-# Charger le modèle avec joblib
-model = joblib.load('modele_cotes.pkl')
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/predict', methods=['POST'])
-def predict():
-    try:
-        cote_equipe_1 = float(request.form['cote_equipe_1'].replace(',', '.'))
-        cote_nul = float(request.form['cote_nul'].replace(',', '.'))
-        cote_equipe_2 = float(request.form['cote_equipe_2'].replace(',', '.'))
-
-        features = np.array([[cote_equipe_1, cote_nul, cote_equipe_2]])
-        prediction = model.predict(features)[0]
-
-        return render_template('index.html', prediction_text=f"Résultat prédit : {prediction}")
-    except Exception as e:
-        return render_template('index.html', prediction_text=f"Erreur : {str(e)}")
-
+from flask import Flask, render_template, request, redirect, url_for, session
+import joblib
 import os
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Render fournit le port via la variable d'environnement PORT
-    app.run(host="0.0.0.0", port=port)
+app = Flask(__name__)
+app.secret_key = 'vraiment-tres-secret'  # à personnaliser pour plus de sécurité
 
+# Mot de passe simple pour accéder à l'application
+PASSWORD = "monmotdepasse123"
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['password'] == PASSWORD:
+            session['authenticated'] = True
+            return redirect(url_for('predict'))
+        else:
+            return render_template('login.html', error="Mot de passe incorrect")
+    return render_template('login.html')
+
+@app.route('/predict', methods=['GET', 'POST'])
+def predict():
+    if not session.get('authenticated'):
+        return redirect(url_for('login'))
+
+    prediction_text = None
+    if request.method == 'POST':
+        try:
+            cote1 = float(request.form['cote_equipe_1'])
+            coteN = float(request.form['cote_nul'])
+            cote2 = float(request.form['cote_equipe_2'])
+            model = joblib.load('modele_cotes.pkl')
+            prediction = model.predict([[cote1, coteN, cote2]])[0]
+            prediction_text = f"Résultat prédit : {prediction}"
+        except:
+            prediction_text = "Erreur de saisie."
+    return render_template('index.html', prediction_text=prediction_text)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
