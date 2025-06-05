@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'vraiment-tres-secret'  # à personnaliser pour plus de sécurité
 
 # Mot de passe simple pour accéder à l'application
-PASSWORD = "monmotdepasse123"
+PASSWORD = "D@nieL07"
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
