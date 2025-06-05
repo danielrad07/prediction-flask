@@ -25,9 +25,9 @@ def predict():
     except Exception as e:
         return render_template('index.html', prediction_text=f"Erreur : {str(e)}")
 
-if __name__ == '__main__':
-    import os
+import os
 
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))  # Render fournit le port via la variable d'environnement PORT
+    app.run(host="0.0.0.0", port=port)
 
