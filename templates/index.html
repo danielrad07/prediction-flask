@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
-    <title>Prédiction de match</title>
+  <meta charset="utf-8">
+  <title>Prédiction de match</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Entrez les cotes du match</h2>
-    <form action="/predict" method="post">
-        Cote Équipe 1: <input type="text" name="cote_equipe_1"><br><br>
-        Cote Nul: <input type="text" name="cote_nul"><br><br>
-        Cote Équipe 2: <input type="text" name="cote_equipe_2"><br><br>
-        <input type="submit" value="Prédire">
-    </form>
-    <h3>{{ prediction_text }}</h3>
+  <h1>Prédiction du Résultat d'un Match</h1>
+
+  <form action="/predict" method="post">
+    <input type="text" name="cote_equipe_1" placeholder="Cote Équipe 1" required><br>
+    <input type="text" name="cote_nul" placeholder="Cote Nul" required><br>
+    <input type="text" name="cote_equipe_2" placeholder="Cote Équipe 2" required><br>
+    <button type="submit">Prédire</button>
+  </form>
+
+  {% if prediction_text %}
+    <div class="result">
+      {{ prediction_text }}
+    </div>
+  {% endif %}
 </body>
 </html>
