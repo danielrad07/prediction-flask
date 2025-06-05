@@ -1,21 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, session
 import joblib
-import os
 
 app = Flask(__name__)
-app.secret_key = 'vraiment-tres-secret'  # à personnaliser pour plus de sécurité
-
-# Mot de passe simple pour accéder à l'application
-PASSWORD = "D@nieL07"
+app.secret_key = 'ton_mot_de_passe_secret'
 
 @app.route('/', methods=['GET', 'POST'])
-def login():
+def home():
     if request.method == 'POST':
-        if request.form['password'] == PASSWORD:
-            session['authenticated'] = True
-            return redirect(url_for('predict'))
+        if request.form['password'] == '1234':  # 🔒 Ton mot de passe ici
+            session['logged_in'] = True
+            return redirect('/predict')
         else:
-            return render_template('login.html', error="Mot de passe incorrect")
+            return render_template('login.html', error='Mot de passe incorrect.')
+    return render_template('login.html')
+
 
     # Affiche un message si l'utilisateur a été déconnecté
     logout_message = None
@@ -30,7 +28,7 @@ def predict():
     if not session.get('logged_in'):
         return redirect('/')
 
-    prediction_text = None  # <- corrige le crash
+    prediction_text = None
     if request.method == 'POST':
         try:
             cote1 = float(request.form['cote_equipe_1'])
@@ -44,6 +42,7 @@ def predict():
             prediction_text = "Erreur de saisie."
 
     return render_template('index.html', prediction_text=prediction_text)
+
 
 
 @app.route('/logout')
