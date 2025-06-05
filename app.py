@@ -30,17 +30,20 @@ def predict():
     if not session.get('authenticated'):
         return redirect(url_for('login'))
 
-    prediction_text = None
+        prediction_text = None
     if request.method == 'POST':
         try:
-            cote1 = float(request.form['cote_equipe_1'])
-            coteN = float(request.form['cote_nul'])
-            cote2 = float(request.form['cote_equipe_2'])
+            # Remplacement des virgules par des points
+            cote1 = float(request.form['cote_equipe_1'].replace(',', '.'))
+            coteN = float(request.form['cote_nul'].replace(',', '.'))
+            cote2 = float(request.form['cote_equipe_2'].replace(',', '.'))
+
             model = joblib.load('modele_cotes.pkl')
             prediction = model.predict([[cote1, coteN, cote2]])[0]
             prediction_text = f"Résultat prédit : {prediction}"
         except:
             prediction_text = "Erreur de saisie."
+
     return render_template('index.html', prediction_text=prediction_text)
 
 @app.route('/logout')
