@@ -15,6 +15,12 @@
     <button type="submit">Prédire</button>
   </form>
 
+<a href="{{ url_for('logout') }}">
+  <button type="button" style="background-color: #ff4d4d; margin-top: 20px;">Se déconnecter</button>
+</a>
+
+
+
   {% if prediction_text %}
     <div class="result">
       {{ prediction_text }}
