@@ -17,12 +17,13 @@ def login():
         else:
             return render_template('login.html', error="Mot de passe incorrect")
 
- # Affiche un message si l'utilisateur a été déconnecté
+    # Affiche un message si l'utilisateur a été déconnecté
     logout_message = None
     if request.args.get('message') == 'logout':
         logout_message = "Vous avez été déconnecté avec succès."
 
-   return render_template('login.html', message=logout_message)
+    return render_template('login.html', message=logout_message)
+
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
