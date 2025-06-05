@@ -20,24 +20,23 @@ def login():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    if 'authenticated' not in session:
-        return redirect(url_for('login'))
-
     prediction_text = None
-
+    if 'logged_in' not in session:
+        return redirect('/')
+    
     if request.method == 'POST':
         try:
             cote1 = float(request.form['cote_equipe_1'])
             coteN = float(request.form['cote_nul'])
             cote2 = float(request.form['cote_equipe_2'])
-
             model = joblib.load('modele_cotes.pkl')
             prediction = model.predict([[cote1, coteN, cote2]])[0]
             prediction_text = f"Résultat prédit : {prediction}"
-        except:
-            prediction_text = "Erreur de saisie."
-
+        except Exception as e:
+            prediction_text = f"Erreur : {e}"
+    
     return render_template('index.html', prediction_text=prediction_text)
+
 
 @app.route('/logout')
 def logout():
