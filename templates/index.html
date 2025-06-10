@@ -9,9 +9,10 @@
   <h1>Prédiction du Résultat d'un Match</h1>
 
   <form action="/predict" method="post">
-    <input type="text" name="cote_equipe_1" placeholder="Cote Équipe 1" required><br>
-    <input type="text" name="cote_nul" placeholder="Cote Nul" required><br>
-    <input type="text" name="cote_equipe_2" placeholder="Cote Équipe 2" required><br>
+    <input type="text" name="cote_equipe_1" placeholder="Cote Équipe 1" autocomplete="off"><br>
+<input type="text" name="cote_nul" placeholder="Cote Nul" autocomplete="off"><br>
+<input type="text" name="cote_equipe_2" placeholder="Cote Équipe 2" autocomplete="off"><br>
+
     <button type="submit">Prédire</button>
   </form>
 
