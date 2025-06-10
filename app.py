@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import joblib
 
+import datetime
+model = joblib.load('modele_cotes.pkl')
+print("🕒 Modèle chargé à", datetime.datetime.now())
+
 app = Flask(__name__)
 app.secret_key = 'D@nieL07'  # Tu peux remplacer ça plus tard par une variable d’environnement
 
