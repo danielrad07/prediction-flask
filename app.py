@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import joblib
 
 app = Flask(__name__)
-app.secret_key = 'D@nieL07'  # Remplace par une vraie clé secrète
+app.secret_key = 'D@nieL07'  # Tu peux remplacer ça plus tard par une variable d’environnement
 
+# Mot de passe simple (à sécuriser plus tard)
 MOT_DE_PASSE = 'D@nieL07'
 
 @app.route('/', methods=['GET', 'POST'])
@@ -12,7 +13,7 @@ def login():
     if request.method == 'POST':
         mot_de_passe = request.form.get('password')
         if mot_de_passe == MOT_DE_PASSE:
-            session['authenticated'] = True
+            session['authenticated'] = True  # Correction ici
             return redirect(url_for('predict'))
         else:
             message = 'Mot de passe incorrect.'
@@ -21,7 +22,8 @@ def login():
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     prediction_text = None
-    if 'logged_in' not in session:
+    # Correction ici — on vérifie bien la bonne clé de session
+    if 'authenticated' not in session:
         return redirect('/')
     
     if request.method == 'POST':
@@ -36,7 +38,6 @@ def predict():
             prediction_text = f"Erreur : {e}"
     
     return render_template('index.html', prediction_text=prediction_text)
-
 
 @app.route('/logout')
 def logout():

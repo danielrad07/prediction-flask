@@ -1,31 +1,37 @@
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import classification_report, accuracy_score
 import joblib
 
-# Chargement des données
-df = pd.read_csv("Cote match2.csv")
+# Charger les données
+df = pd.read_csv('Cote match2.csv')
 
-# Nettoyage : conversion des virgules en points si nécessaire
+# Nettoyer : remplacer les virgules par des points et convertir en float
 for col in ['cote_equipe_1', 'cote_nul', 'cote_equipe_2']:
-    df[col] = df[col].astype(str).str.replace(',', '.').astype(float)
+    df[col] = df[col].astype(str).str.replace(',', '.')
+    df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# Encodage de la cible
-encoder = LabelEncoder()
-df['target'] = encoder.fit_transform(df['resultat'])
+# Supprimer les lignes incomplètes
+df.dropna(subset=['cote_equipe_1', 'cote_nul', 'cote_equipe_2', 'resultat'], inplace=True)
 
-# Séparation X et y
+# Définir X et y
 X = df[['cote_equipe_1', 'cote_nul', 'cote_equipe_2']]
-y = df['target']
+y = df['resultat']
 
-# Entraînement
+# Séparer en données d'entraînement et de test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-model = DecisionTreeClassifier()
+
+# Créer et entraîner le modèle
+model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
-# Sauvegarde
-joblib.dump(model, 'modele_cotes.pkl')
-joblib.dump(encoder, 'label_encoder.pkl')
+# Évaluer
+y_pred = model.predict(X_test)
+print("🔍 Précision du modèle :", round(accuracy_score(y_test, y_pred), 2))
+print("\n📊 Rapport de classification :\n", classification_report(y_test, y_pred))
 
-print("✅ Modèle entraîné et sauvegardé.")
+# Sauvegarder le modèle
+joblib.dump(model, 'modele_cotes.pkl')
+print("\n✅ Modèle sauvegardé sous 'modele_cotes.pkl'")
