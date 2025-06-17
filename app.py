@@ -9,6 +9,8 @@ scaler = joblib.load('scaler.pkl')
 with open('label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
+print("Type de label_encoder :", type(label_encoder))
+
 print("🕒 Modèle, scaler et LabelEncoder chargés à", datetime.datetime.now())
 
 app = Flask(__name__)
