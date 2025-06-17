@@ -3,13 +3,13 @@ import joblib
 import pickle
 import datetime
 
-# Charger le modèle
-model = joblib.load('modele_cotes.pkl')
-# Charger le label encoder
+# Charger le modèle, scaler et label encoder
+model = joblib.load('modele_ensemble.pkl')  # ou 'modele_cotes.pkl' si c’est ce que tu as
+scaler = joblib.load('scaler.pkl')
 with open('label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
 
-print("🕒 Modèle et LabelEncoder chargés à", datetime.datetime.now())
+print("🕒 Modèle, scaler et LabelEncoder chargés à", datetime.datetime.now())
 
 app = Flask(__name__)
 app.secret_key = 'D@nieL07'
@@ -39,8 +39,9 @@ def predict():
             cote1 = float(request.form['cote_equipe_1'])
             coteN = float(request.form['cote_nul'])
             cote2 = float(request.form['cote_equipe_2'])
-            
-            prediction_num = model.predict([[cote1, coteN, cote2]])[0]
+
+            input_scaled = scaler.transform([[cote1, coteN, cote2]])
+            prediction_num = model.predict(input_scaled)[0]
             prediction_label = label_encoder.inverse_transform([prediction_num])[0]
 
             prediction_text = f"Résultat prédit : {prediction_label}"
