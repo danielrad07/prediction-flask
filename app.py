@@ -4,7 +4,7 @@ import pickle
 import datetime
 
 # Charger le modèle, scaler et label encoder
-model = joblib.load('modele_ensemble.pkl')  # ou 'modele_cotes.pkl' si c’est ce que tu as
+model = joblib.load('modele_ensemble.pkl')  # ou 'modele_cotes.pkl' selon ce que tu as
 scaler = joblib.load('scaler.pkl')
 with open('label_encoder.pkl', 'rb') as f:
     label_encoder = pickle.load(f)
@@ -41,8 +41,8 @@ def predict():
             cote2 = float(request.form['cote_equipe_2'])
 
             input_scaled = scaler.transform([[cote1, coteN, cote2]])
-            prediction_num = model.predict(input_scaled)[0]
-            prediction_label = label_encoder.inverse_transform([prediction_num])[0]
+            prediction_num = model.predict(input_scaled)  # c’est un tableau numpy
+            prediction_label = label_encoder.inverse_transform(prediction_num)[0]
 
             prediction_text = f"Résultat prédit : {prediction_label}"
         except Exception as e:
